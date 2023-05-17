@@ -1,0 +1,34 @@
+---
+ - hosts: Webserver
+
+   tasks:
+
+    - name: apt-get clean
+      shell: apt-get clean
+      become: true
+      become_user: root
+
+    - name: apt-get update
+      shell: apt-get update
+      become: true
+      become_user: root
+
+    - name: ensure Docker is installed
+      apt: name=docker.io update_cache=yes
+      become: yes
+
+    - name: ensure Docker Compose is installed
+      apt: name=docker-compose update_cache=yes
+      become: yes
+
+    - name: ensure Docker is running
+      service: name=docker state=started
+      become: true
+      become_user: root
+      
+    - name: Deploy stack from a compose file
+      docker_stack:
+        state: present
+        name: mystack
+        compose:
+          - docker-compose.yml
